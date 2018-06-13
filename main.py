@@ -100,11 +100,46 @@ psi = test
 print(test)
 psi = psi.subs(x,1)
 psi_squared = psi*psi
-h_psi = hamiltonian(psi)
+do_h_psi = hamiltonian(psi)
+h_psi = psi * do_h_psi
+print("podstawianie: ")
+suma = []
+for i in range(0,6,1):
+    suma.append(0)
+całka_h = 0
+for i in range(0,6,1): #musi być int
+    for j in range(0, 6, 1):
+        suma[j] = suma[j] +((1/2)*(h_psi.subs([(X1,i),(X2,j)])+h_psi.subs([(X1,i+1),(X2,j)])))
 
-function_to_optimize = integrate(h_psi,(X1,-oo,oo),(X2,-oo,oo))/integrate(psi_squared,(X1,-oo,oo),(X2,-oo,oo))#FUNKCJA INTEGRATE NIE WSPÓŁPRACUJE
-print("scałkowane")
-#nie wiemy gdzie jest błąd
+print("całka z h_psi")
+for i in range(0,5,1): #musi być int
+    całka_h = całka_h + ((1/2)*(suma[i]+suma[i+1]))
+#function_to_optimize = integrate(h_psi,(X1,-oo,oo),(X2,-oo,oo))/integrate(psi_squared,(X1,-oo,oo),(X2,-oo,oo))#FUNKCJA INTEGRATE NIE WSPÓŁPRACUJE
+
+
+print(całka_h)
+
+
+całka = 0
+for i in range(0,6,1): #musi być int
+    for j in range(0, 6, 1):
+        suma[j] = suma[j] +((1/2)*(psi_squared.subs([(X1,i),(X2,j)])+psi_squared.subs([(X1,i+1),(X2,j)])))
+
+print("całka z bez h:")
+for i in range(0,5,1): #musi być int
+    całka = całka + ((1/2)*(suma[i]+suma[i+1]))
+
+print(całka)
+
+def f(alfa1,alfa2):
+ return całka_h.subs([(alpha1,alfa1),(alpha2,alfa2)])/całka.subs([(alpha1,alfa1),(alpha2,alfa2)])
+
+
+# Stałe C1... chyba juz niepotrzebne...
+
+#nie potrafię podstawić do funkcji fmin funkcji z dwoma zmiennymi
+
+
 
 
 #należy znaleźć minimum
