@@ -4,7 +4,8 @@ import scipy
 import numpy as np
 from scipy import integrate
 from scipy.misc import derivative
-
+import matplotlib.pyplot as plt
+import csv
 #sympy.init_printing(use_latex="mathjax")
 
 def function ():
@@ -37,8 +38,8 @@ A2 = -6.28
 
 h_c = 1970#A*eV
 
-stala_hamilton = ((-h_c**2)/(2*m_c_squared))
-
+stala_hamilton = -7.76*10**-5#((h_c**2)/(2*m_c_squared))
+#print(stala_hamilton)
 R = Symbol("R")
 
 B = Symbol("B")
@@ -90,14 +91,13 @@ psi = Symbol("psi")
 
 
 
-
 a1 = 1
 
 a2 = 1
 
-XWellA = 1
+XWellA = 0.001
 
-XWellB = 3
+XWellB = 0.501
 
 m_p = 1,67*10**-27
 #######################################################
@@ -153,8 +153,10 @@ internal_potential = internal_potential.subs(R, Abs(X1-X2))
 print(internal_potential)
 
 def internal_pot(x,y):
-    return 3.14* (np.exp((-2 * (np.abs(x-y) - 0.85)) / 0.45) - 2 * np.exp((-np.abs(x-y) - 0.85)) / 0.45)
-#print('pot wew')
+    R=abs(x-y)
+    #print(R)
+    return 3.14*(np.exp((-2 * (R - 0.85)) / 0.45) - 2 * np.exp((-(R - 0.85)) / 0.45))
+    #print('pot wew')
 #print(scipy.integrate.dblquad(internal_pot,XWellA-3,XWellA+3,lambda x:XWellB-3,lambda x:XWellB+3))
 #potencjal zewnetrzny
 def ext_potential(variable):
@@ -185,9 +187,9 @@ def ext_potential(variable):
 
 #psi_tab =[U(X1,"a")*U(X2,"b"),U(X2,"a")*U(X1,"b"),U(X1,"a")*U(X2,"a"),U(X1,"b")*U(X2,"b")]
 def psi_w_a(x):
-    return ((alpha1 ** 1 / 2) / pi ** 1 / 4) * np.exp(-alpha1 ** 2 * (x - XWellA) ** 2 / 2)
+    return ((alpha1 ** (1 / 2)) / (pi ** (1 / 4)))* np.exp(-(alpha1**2)*((x - XWellA)**2) / 2)
 def psi_w_b(x):
-    return ((alpha1**1/2)/pi**1/4)*np.exp(-alpha1**2*(x-XWellB)**2/2)
+    return ((alpha2 ** (1 / 2)) / (pi ** (1 / 4)))* np.exp(-(alpha2**2)*((x - XWellB)**2) / 2)
 
 
 
@@ -232,7 +234,7 @@ def S22 (x,y):
 def S23 (x,y):
     return psiBA(x,y)*psiAA(x,y)
 def S24 (x,y):
-    return psiBB(x,y)*psiBB(x,y)
+    return psiBA(x,y)*psiBB(x,y)
 def S31 (x,y):
     return psiAA(x,y)*psiAB(x,y)
 def S32 (x,y):
@@ -265,7 +267,7 @@ def h22 (x,y):
 def h23 (x,y):
     return psiBA(x,y)*hamiltonianAA(x,y)
 def h24 (x,y):
-    return psiBB(x,y)*hamiltonianBB(x,y)
+    return psiBA(x,y)*hamiltonianBB(x,y)
 def h31 (x,y):
     return psiAA(x,y)*hamiltonianAB(x,y)
 def h32 (x,y):
@@ -282,78 +284,176 @@ def h43 (x,y):
     return psiBB(x,y)*hamiltonianAA(x,y)
 def h44 (x,y):
     return psiBB(x,y)*hamiltonianBB(x,y)
+#Test potencjału zewnętrznego, wychodzi OK
+'''
+y = []
+x = []
+for i in np.arange(0,1000,1):
+    x.append(i/500)
+    y.append(ext_potential(i/500))
 
-print("liczę S11")
-w_S11 = scipy.integrate.dblquad(S11,-2,4,lambda x:0, lambda x:6)
-print("liczę S12")
-w_S12 = scipy.integrate.dblquad(S12,-2,4,lambda x:0, lambda x:6)
-print("liczę S13")
-w_S13 = scipy.integrate.dblquad(S13,-2,4,lambda x:0, lambda x:6)
-print("liczę S14")
-w_S14 = scipy.integrate.dblquad(S14,-2,4,lambda x:0, lambda x:6)
-print("liczę S21")
-w_S21 = scipy.integrate.dblquad(S21,-2,4,lambda x:0, lambda x:6)
-print("liczę S22")
-w_S22 = scipy.integrate.dblquad(S22,-2,4,lambda x:0, lambda x:6)
-print("liczę S23")
-w_S23 = scipy.integrate.dblquad(S23,-2,4,lambda x:0, lambda x:6)
-print("liczę S24")
-w_S24 = scipy.integrate.dblquad(S24,-2,4,lambda x:0, lambda x:6)
-print("liczę S31")
-w_S31 = scipy.integrate.dblquad(S31,-2,4,lambda x:0, lambda x:6)
-print("liczę S32")
-w_S32 = scipy.integrate.dblquad(S32,-2,4,lambda x:0, lambda x:6)
-print("liczę S33")
-w_S33 = scipy.integrate.dblquad(S33,-2,4,lambda x:0, lambda x:6)
-print("liczę S34")
-w_S34 = scipy.integrate.dblquad(S34,-2,4,lambda x:0, lambda x:6)
-print("liczę S41")
-w_S41 = scipy.integrate.dblquad(S41,-2,4,lambda x:0, lambda x:6)
-print("liczę S42")
-w_S42 = scipy.integrate.dblquad(S42,-2,4,lambda x:0, lambda x:6)
-print("liczę S43")
-w_S43 = scipy.integrate.dblquad(S43,-2,4,lambda x:0, lambda x:6)
-print("liczę S44")
-w_S44 = scipy.integrate.dblquad(S44,-2,4,lambda x:0, lambda x:6)
+plt.figure(1)
+plt.scatter(x,y)
+plt.show()
+'''
+#Test potencjalu wewnetrzengo, jest OK
+'''
+y=[]
+x=[]
+for R in np.arange(0,1,0.001):
+    x.append(R)
+    y.append(internal_pot(0,R))
+plt.figure(1)
+plt.scatter(x,y)
+plt.axhline(y=0)
+plt.show()
+'''
 
-print("liczę h11")
-w_h11 = scipy.integrate.dblquad(h11,-2,4,lambda x:0, lambda x:6)
-print("liczę h12")
-w_h12 = scipy.integrate.dblquad(h12,-2,4,lambda x:0, lambda x:6)
-print("liczę h13")
-w_h13 = scipy.integrate.dblquad(h13,-2,4,lambda x:0, lambda x:6)
-print("liczę h14")
-w_h14 = scipy.integrate.dblquad(h14,-2,4,lambda x:0, lambda x:6)
-print("liczę h21")
-w_h21 = scipy.integrate.dblquad(h21,-2,4,lambda x:0, lambda x:6)
-print("liczę h22")
-w_h22 = scipy.integrate.dblquad(h22,-2,4,lambda x:0, lambda x:6)
-print("liczę h23")
-w_h23 = scipy.integrate.dblquad(h23,-2,4,lambda x:0, lambda x:6)
-print("liczę h24")
-w_h24 = scipy.integrate.dblquad(h24,-2,4,lambda x:0, lambda x:6)
-print("liczę h31")
-w_h31 = scipy.integrate.dblquad(h31,-2,4,lambda x:0, lambda x:6)
-print("liczę h32")
-w_h32 = scipy.integrate.dblquad(h32,-2,4,lambda x:0, lambda x:6)
-print("liczę h33")
-w_h33 = scipy.integrate.dblquad(h33,-2,4,lambda x:0, lambda x:6)
-print("liczę h34")
-w_h34 = scipy.integrate.dblquad(h34,-2,4,lambda x:0, lambda x:6)
-print("liczę h41")
-w_h41 = scipy.integrate.dblquad(h41,-2,4,lambda x:0, lambda x:6)
-print("liczę h42")
-w_h42 = scipy.integrate.dblquad(h42,-2,4,lambda x:0, lambda x:6)
-print("liczę h43")
-w_h43 = scipy.integrate.dblquad(h43,-2,4,lambda x:0, lambda x:6)
-print("liczę h44")
-w_h44 = scipy.integrate.dblquad(h44,-2,4,lambda x:0, lambda x:6)
+x_axis = []
+C1_values = []
+C2_values = []
+C3_values = []
+C4_values = []
+E_values = []
+for R in np.arange(0.5,3.5,0.1):
 
-matrixS = np.array([[w_S11[0],w_S12[0],w_S13[0],w_S14[0]],[w_S21[0],w_S22[0],w_S23[0],w_S24[0]],[w_S31[0],w_S32[0],w_S33[0],w_S34[0]],[w_S41[0],w_S42[0],w_S43[0],w_S44[0]]])
-print(matrixS)
-matrixH = np.array([[w_h11[0],w_h12[0],w_h13[0],w_h14[0]],[w_h21[0],w_h22[0],w_h23[0],w_h24[0]],[w_h31[0],w_h32[0],w_h33[0],w_h34[0]],[w_h41[0],w_h42[0],w_h43[0],w_h44[0]]])
-print(matrixH)
+    print("liczę S11")
+    w_S11 = scipy.integrate.dblquad(S11,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S12")
+    w_S12 = scipy.integrate.dblquad(S12,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S13")
+    w_S13 = scipy.integrate.dblquad(S13,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S14")
+    w_S14 = scipy.integrate.dblquad(S14,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S21")
+    w_S21 = scipy.integrate.dblquad(S21,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S22")
+    w_S22 = scipy.integrate.dblquad(S22,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S23")
+    w_S23 = scipy.integrate.dblquad(S23,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S24")
+    w_S24 = scipy.integrate.dblquad(S24,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S31")
+    w_S31 = scipy.integrate.dblquad(S31,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S32")
+    w_S32 = scipy.integrate.dblquad(S32,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S33")
+    w_S33 = scipy.integrate.dblquad(S33,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S34")
+    w_S34 = scipy.integrate.dblquad(S34,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S41")
+    w_S41 = scipy.integrate.dblquad(S41,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S42")
+    w_S42 = scipy.integrate.dblquad(S42,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S43")
+    w_S43 = scipy.integrate.dblquad(S43,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę S44")
+    w_S44 = scipy.integrate.dblquad(S44,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+
+    print("liczę h11")
+    w_h11 = scipy.integrate.dblquad(h11,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h12")
+    w_h12 = scipy.integrate.dblquad(h12,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h13")
+    w_h13 = scipy.integrate.dblquad(h13,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h14")
+    w_h14 = scipy.integrate.dblquad(h14,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h21")
+    w_h21 = scipy.integrate.dblquad(h21,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h22")
+    w_h22 = scipy.integrate.dblquad(h22,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h23")
+    w_h23 = scipy.integrate.dblquad(h23,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h24")
+    w_h24 = scipy.integrate.dblquad(h24,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h31")
+    w_h31 = scipy.integrate.dblquad(h31,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h32")
+    w_h32 = scipy.integrate.dblquad(h32,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h33")
+    w_h33 = scipy.integrate.dblquad(h33,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h34")
+    w_h34 = scipy.integrate.dblquad(h34,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h41")
+    w_h41 = scipy.integrate.dblquad(h41,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h42")
+    w_h42 = scipy.integrate.dblquad(h42,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h43")
+    w_h43 = scipy.integrate.dblquad(h43,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+    print("liczę h44")
+    w_h44 = scipy.integrate.dblquad(h44,XWellA-3,XWellA+3,lambda x:R-3, lambda x:R+3)
+
+    matrixS = np.array([[w_S11[0],w_S12[0],w_S13[0],w_S14[0]],[w_S21[0],w_S22[0],w_S23[0],w_S24[0]],[w_S31[0],w_S32[0],w_S33[0],w_S34[0]],[w_S41[0],w_S42[0],w_S43[0],w_S44[0]]])
+    #print(matrixS)
+    matrixH = np.array([[w_h11[0],w_h12[0],w_h13[0],w_h14[0]],[w_h21[0],w_h22[0],w_h23[0],w_h24[0]],[w_h31[0],w_h32[0],w_h33[0],w_h34[0]],[w_h41[0],w_h42[0],w_h43[0],w_h44[0]]])
+    #print(matrixH)
 
 
-c_Vector = [C1,C2,C3,C4]
+    #c_Vector = [C1,C2,C3,C4]
+    E = []
+    c_Vector = []
+
+    E, c_Vector = scipy.linalg.eig(matrixH,matrixS)
+    #print('energie')
+    #print(E)
+    #print('wektor C')
+    #print(c_Vector)
+    c_vals = []
+    #sum = 0
+    for i in range(0,4):
+        c_vals.append(c_Vector[i][np.argmin(E)])
+        if isinstance(c_vals[i], complex):
+            c_vals[i]= np.absolute(c_vals[i])
+        else:
+            c_vals[i] = c_vals[i]**2
+        #sum+=c_vals[i]**2
+    #print(c_Vector[np.argmin(E)])
+    #print(c_vals)
+    #print(sum)
+
+    print(c_Vector)
+    x_axis.append(R/3)
+    C1_values.append(c_vals[0])
+    C2_values.append((c_vals[1]))
+    C3_values.append((c_vals[2]))
+    C4_values.append((c_vals[3]))
+    E_values.append(min(E))
+    print("C1")
+    print(C1_values)
+    print("C2")
+    print(C2_values)
+    print("C3")
+    print(C3_values)
+    print("C4")
+    print(C4_values)
+    print('E')
+    print(E)
+    print('Emin')
+    print(min(E))
+
+
+    #E[:] = []
+    #c_Vector = []
+
+plt.figure(1)
+C1_scatter = plt.scatter(x_axis,C1_values,c='r',marker = 'o')
+C2_scatter = plt.scatter(x_axis,C2_values,c='g',marker = ',')
+C3_scatter = plt.scatter(x_axis,C3_values,c='b', marker = 'x')
+C4_scatter = plt.scatter(x_axis,C4_values,c='y',marker = 'p')
+plt.ylim(0,1)
+plt.xlim(0.01,1.15)
+plt.xlabel('d/D')
+plt.ylabel('prawdopodobieństwo')
+plt.legend((C1_scatter,C2_scatter,C3_scatter,C4_scatter),('|C1|^2','|C2|^2','|C3|^2','|C4|^2'))
+plt.show()
+
+
+with open('dane_metoda_wariacyjna2.csv', 'w') as f:
+    writer = csv.writer(f, delimiter='\t')
+    writer.writerows(zip(x_axis,C1_values,C2_values,C3_values,C4_values,E_values))
+
+    quit()
+
+
+
 
