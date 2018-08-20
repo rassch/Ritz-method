@@ -1,7 +1,7 @@
 <application>
   <component name="GithubSettings">
-    <option name="LOGIN" value="rassch" />
-    <option name="HOST" value="https://github.com/rassch/Ritz-method.git" />
+    <option name="LOGIN" value="Vergr0" />
+    <option name="HOST" value="https://github.com/Vergr0/Variational-method-" />
     <option name="AUTH_TYPE" value="BASIC" />
     <option name="CLONE_GIT_USING_SSH" value="true" />
   </component>
